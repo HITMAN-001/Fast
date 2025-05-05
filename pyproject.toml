@@ -1,0 +1,11 @@
+[project]
+name = "learning-fastapi"
+version = "0.1.0"
+description = "Learning FastAPI project"
+
+[project.scripts]
+app = "Fast-Backend.app.main:app"
+
+[tool.pytest.ini_options]
+testpaths = ["Fast-Backend/tests"]
+pythonpath = ["."]

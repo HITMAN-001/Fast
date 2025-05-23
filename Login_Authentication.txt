@@ -1,0 +1,156 @@
+# Authentication and User Management Documentation
+
+## Overview
+This document provides detailed instructions for authentication and user management in the MKTA Tennis Academy system. It covers user registration, login, password reset, and user management operations.
+
+## User Registration
+
+### How to Register a New User
+1. **Access the Registration Page**:
+   - Navigate to the login page
+   - Click on "Register" or "Sign Up"
+
+2. **Complete the Registration Form**:
+   - Enter Email Address (required)
+   - Create Password (required, minimum 8 characters recommended)
+   - Optional information:
+     * Birthdate
+     * Address
+     * Is Salaried (checkbox)
+
+3. **Submit Registration**:
+   - Click "Register" button
+   - The system will check if the email is already registered
+   - If successful, the account will be created and automatically activated
+
+4. **Technical Notes**:
+   - User accounts are now automatically verified (no email verification required)
+   - Password is hashed using secure hashing algorithms before storage
+   - API endpoint: POST /users/
+
+## User Login
+
+### How to Log In
+1. **Access the Login Page**:
+   - Navigate to the main website
+   - Click "Login" button in the navigation bar
+
+2. **Enter Credentials**:
+   - Enter registered email address
+   - Enter password
+   - Click "Login" button
+
+3. **Login Response**:
+   - If successful, you will receive an access token
+   - The token will be valid for 30 minutes (default setting)
+   - The system will redirect you to the dashboard
+
+4. **Technical Notes**:
+   - API endpoint: POST /token
+   - Returns: JWT token, token type, user ID
+   - Error messages will be displayed for invalid credentials
+
+## Password Reset
+
+### How to Reset a Forgotten Password
+1. **Initiate Password Reset**:
+   - Click "Forgot Password?" on the login page
+   - Enter your email address
+   - Click "Reset Password" button
+   - A password reset link will be sent to your email (if registered)
+
+2. **Complete Password Reset**:
+   - Open the email and click the password reset link
+   - Enter a new password (twice for confirmation)
+   - Click "Submit" or "Reset Password" button
+
+3. **Technical Notes**:
+   - Password reset tokens expire after 1 hour
+   - API endpoints:
+     * Request reset: POST /request-password-reset/
+     * Complete reset: POST /reset-password/
+
+## User Management (Admin Only)
+
+### View All Users
+1. **Access User Management**:
+   - Log in with administrator credentials
+   - Navigate to Admin Dashboard
+   - Click "User Management"
+
+2. **Technical Notes**:
+   - API endpoint: GET /users/
+   - Requires authentication with admin privileges
+   - Returns a list of all users with their details
+
+### View Specific User
+1. **Access User Details**:
+   - From the User Management page, click on a user's name or "View" button
+   - User details will be displayed
+
+2. **Technical Notes**:
+   - API endpoint: GET /users/{user_id}
+   - Requires authentication
+
+### Update User Information
+1. **Edit User Details**:
+   - From the User Management page, click "Edit" button next to a user
+   - Update the desired fields
+   - Click "Save Changes"
+
+2. **Technical Notes**:
+   - API endpoint: PUT /users/{user_id}
+   - Requires authentication
+   - Can update email, password, birthdate, address, and is_salaried status
+
+### Delete User Account
+1. **Delete a User**:
+   - From the User Management page, click "Delete" button next to a user
+   - Confirm deletion when prompted
+
+2. **Technical Notes**:
+   - API endpoint: DELETE /users/{user_id}
+   - Requires authentication with admin privileges
+   - Deletion is permanent and cannot be undone
+
+## Best Practices for Security
+
+1. **Password Security**:
+   - Use strong, unique passwords (minimum 8 characters)
+   - Include a mix of uppercase, lowercase, numbers, and special characters
+   - Never share your password with others
+
+2. **Account Protection**:
+   - Log out when using shared computers
+   - Change your password periodically
+   - Report any suspicious activity to administrators
+
+3. **Administrator Responsibilities**:
+   - Regularly review user accounts
+   - Promptly disable accounts of users who have left the organization
+   - Monitor for unusual login activity
+
+## Troubleshooting
+
+1. **Cannot Log In**:
+   - Verify you're using the correct email address
+   - Check if Caps Lock is on
+   - Try resetting your password
+   - Contact administrator if issues persist
+
+2. **Didn't Receive Password Reset Email**:
+   - Check your spam/junk folder
+   - Verify you entered the correct email address
+   - Try again after 5 minutes
+   - Contact administrator if issues persist
+
+## Support Contacts
+
+For technical assistance with user accounts:
+- Email: support@mkta.example.com
+- Phone: (555) 123-4567
+- Admin Portal: admin.mkta.example.com/support
+
+---
+
+*This documentation was last updated on May 22, 2025.*

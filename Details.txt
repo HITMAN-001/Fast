@@ -1,0 +1,32 @@
+All the questions about the project will be answered here. All the technical details will be written here.
+
+1. We are using Postgre SQL in the backend to store the data. But the rest of the data, like images and Videos are actually stored on the computer.
+The database.py file contains the configuration for our PostgreSQL database connection using SQLAlchemy. It defines the database URL, creates the engine, and sets up the SessionLocal and Base objects. Key components include:
+
+1. SQLALCHEMY_DATABASE_URL: Specifies the PostgreSQL connection string.
+2. engine: Creates the SQLAlchemy engine with connection pooling settings.
+3. SessionLocal: A factory for creating database sessions.
+4. Base: The declarative base class for our models.
+
+The models.py file defines the database schema using SQLAlchemy ORM. It contains class definitions for our database tables, including:
+
+1. User: Stores user information (id, email, hashed_password, etc.).
+2. TournamentImage: Holds data for tournament images (id, filename, upload_date, etc.).
+3. TournamentSchedule: Contains tournament schedule information (date, time, category, etc.).
+4. TournamentResult: Stores tournament results (winner, runner_up, score, etc.).
+5. NewsArticle: Manages news article data (title, content, publish_date, etc.).
+
+Each model class inherits from Base and uses SQLAlchemy Column types to define table structure and relationships.
+
+2. Question: How do I spin up my Database?
+Answer: The database can be cretaed using docker-compose.yml file. Just run the following command in the Fast-Backend/docker-compose.yml directory of the project:
+docker-compose up -d
+
+This will create a PostgreSQL database and start it in the background. The database will be accessible at localhost:5432.
+
+
+3. Question: How Do I use SQLAlchemy to create a database session? And what is SQL Alchecmy, How is it used entirely in the project?
+Answer: SQLAlchemy is a Python library that provides a full suite of well known enterprise-level persistence patterns, designed for efficient and high-performing database access. It is used in the project to create a database session and to define the database schema. The database session is created using the SessionLocal class, which is a factory for creating database sessions. The database schema is defined using the models.py file, which contains class definitions for the database tables. 
+
+The database session is created using the SessionLocal class, which is a factory for creating database sessions. The database schema is defined using the models.py file, which contains class definitions for the database tables. The database session is created using the SessionLocal class, which is a factory for creating database sessions. The database schema is defined using the models.py file, which contains class definitions for the database tables. 
+

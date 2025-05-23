@@ -1,0 +1,304 @@
+# Tournament Management Documentation
+
+## Overview
+This document provides detailed instructions for managing tournament-related content in the MKTA Tennis Academy system. It covers tournament image management, tournament schedules, tournament details, and tournament results.
+
+## Tournament Images
+
+### How to Upload Tournament Images
+1. **Access the Tournament Admin Panel**:
+   - Log in with your administrator account
+   - Navigate to the Tournament Section in the admin dashboard
+
+2. **Upload New Images**:
+   - Click on "Manage Tournament Images" button
+   - Click "Upload New Image" button
+   - Fill in the required form fields:
+     * Title (required): Enter a descriptive title for the image
+     * Description (optional): Add details about the image
+     * Image File: Click "Browse" and select a JPG, JPEG, or PNG file (max size: 5MB)
+   - Click "Upload" button
+   - The system will process and save the image
+
+3. **Technical Notes**:
+   - API endpoint: POST /tournament/images/
+   - Supported formats: JPG, JPEG, PNG
+   - Recommended image size: 1200x800 pixels
+   - Maximum file size: 5MB
+   - Images are stored in the "static/tournament_images" directory
+   - Each uploaded image receives a unique filename
+
+### How to View Tournament Images
+1. **Access Image Gallery**:
+   - Navigate to Tournament Section
+   - Click "View Tournament Gallery" or similar button
+   - All active tournament images will be displayed
+
+2. **Technical Notes**:
+   - API endpoint: GET /tournament/images/
+   - Can filter by active status with query parameter "active_only"
+   - Supports pagination with "skip" and "limit" parameters
+
+### How to Edit Tournament Images
+1. **Edit Image Details**:
+   - Navigate to Tournament Section > Manage Tournament Images
+   - Locate the image you want to edit
+   - Click the "Edit" button next to the image
+   - Update the following fields as needed:
+     * Title
+     * Description
+     * Image (optional: upload a new image file to replace the existing one)
+   - Click "Save Changes" button
+
+2. **Technical Notes**:
+   - API endpoint: PUT /tournament/images/{image_id}
+   - If a new image is uploaded, the old one will be deleted from the server
+   - The database record will be updated with new information
+
+### How to Delete Tournament Images
+1. **Delete an Image**:
+   - Navigate to Tournament Section > Manage Tournament Images
+   - Locate the image you want to delete
+   - Click the "Delete" button next to the image
+   - Confirm deletion when prompted
+
+2. **Technical Notes**:
+   - API endpoint: DELETE /tournament/images/{image_id}
+   - This will remove both the database record and the actual image file
+   - Deletion is permanent and cannot be undone
+
+## Tournament Schedules
+
+### How to Upload Tournament Schedule
+1. **Access Schedule Management**:
+   - Log in with your administrator account
+   - Navigate to Tournament Section
+   - Click on "Manage Schedule" button
+
+2. **Add New Schedule Entry**:
+   - Click "Add New Schedule" button
+   - Complete the form with the following required information:
+     * Date: Select the date of the matches (YYYY-MM-DD format)
+     * Time: Enter the starting time (e.g., "14:00")
+     * Category: Enter the tournament category (e.g., "Men's Singles")
+     * Round: Enter the round (e.g., "Quarter-final", "Semi-final")
+     * Court: Enter the court number or name (e.g., "Court 1")
+     * Players: Enter the players' names (e.g., "John Smith vs. Alex Johnson")
+   - Click "Save Schedule" button
+
+3. **Technical Notes**:
+   - API endpoint: POST /tournament/schedules/
+   - All fields are required
+   - Date must be in ISO format (YYYY-MM-DD)
+
+### How to View Tournament Schedules
+1. **View All Schedules**:
+   - Navigate to Tournament Section
+   - Click "View Tournament Schedules" or similar button
+   - All tournament schedules will be displayed, sorted by date
+
+2. **View Schedules by Date**:
+   - Navigate to Tournament Section
+   - Use the date filter to select a specific date
+   - Click "Filter" or "Search" button
+   - Schedules for the selected date will be displayed
+
+3. **Technical Notes**:
+   - API endpoints:
+     * GET /tournament/schedules/ (all schedules)
+     * GET /tournament/schedules/{date} (by specific date)
+   - Supports pagination with "skip" and "limit" parameters
+
+### How to Edit Tournament Schedules
+1. **Edit a Schedule Entry**:
+   - Navigate to Tournament Section > Manage Schedule
+   - Locate the schedule entry you want to edit
+   - Click the "Edit" button next to the entry
+   - Update any of the fields as needed
+   - Click "Save Changes" button
+
+2. **Technical Notes**:
+   - API endpoint: PUT /tournament/schedules/{schedule_id}
+   - All fields can be updated
+
+### How to Delete Tournament Schedules
+1. **Delete a Schedule Entry**:
+   - Navigate to Tournament Section > Manage Schedule
+   - Locate the schedule entry you want to delete
+   - Click the "Delete" button next to the entry
+   - Confirm deletion when prompted
+
+2. **Technical Notes**:
+   - API endpoint: DELETE /tournament/schedules/{schedule_id}
+   - Deletion is permanent and cannot be undone
+
+## Tournament Management
+
+### How to Create a New Tournament
+1. **Access Tournament Management**:
+   - Log in with your administrator account
+   - Navigate to Tournament Section
+   - Click on "Manage Tournaments" button
+
+2. **Add New Tournament**:
+   - Click "Add New Tournament" button
+   - Complete the form with the following information:
+     * Name (required): Enter the tournament name
+     * Start Date (required): Select the tournament start date
+     * End Date (required): Select the tournament end date
+     * Location (required): Enter the venue or location
+     * Description (optional): Add details about the tournament
+     * Is Active (checkbox): Check to make the tournament visible to users
+   - Click "Create Tournament" button
+
+3. **Technical Notes**:
+   - API endpoint: POST /tournament/
+   - Date fields must be in ISO format (YYYY-MM-DD)
+   - The created tournament can later have results associated with it
+
+### How to View Tournaments
+1. **View All Tournaments**:
+   - Navigate to Tournament Section
+   - Click "View Tournaments" or similar button
+   - All active tournaments will be displayed by default
+
+2. **View Tournament Details**:
+   - Click on a tournament name or "View Details" button
+   - Complete tournament information will be displayed, including associated results
+
+3. **Technical Notes**:
+   - API endpoints:
+     * GET /tournament/ (all tournaments)
+     * GET /tournament/{tournament_id} (specific tournament)
+   - Can filter by active status with query parameter "active_only"
+   - Supports pagination with "skip" and "limit" parameters
+
+### How to Edit Tournaments
+1. **Edit Tournament Details**:
+   - Navigate to Tournament Section > Manage Tournaments
+   - Locate the tournament you want to edit
+   - Click the "Edit" button next to the tournament
+   - Update any of the fields as needed
+   - Click "Save Changes" button
+
+2. **Technical Notes**:
+   - API endpoint: PUT /tournament/{tournament_id}
+   - All fields can be updated
+
+### How to Delete Tournaments
+1. **Delete a Tournament**:
+   - Navigate to Tournament Section > Manage Tournaments
+   - Locate the tournament you want to delete
+   - Click the "Delete" button next to the tournament
+   - Confirm deletion when prompted
+
+2. **Technical Notes**:
+   - API endpoint: DELETE /tournament/{tournament_id}
+   - This will remove the tournament record but not associated results
+   - Deletion is permanent and cannot be undone
+
+## Tournament Results
+
+### How to Add Tournament Results
+1. **Access Results Management**:
+   - Log in with your administrator account
+   - Navigate to Tournament Section
+   - Click on "Manage Results" button
+
+2. **Add New Result**:
+   - Click "Add New Result" button
+   - Complete the form with the following information:
+     * Tournament: Select the tournament from the dropdown
+     * Category: Enter the tournament category (e.g., "Men's Singles")
+     * Winner: Enter the name of the winner
+     * Runner-up: Enter the name of the runner-up
+     * Score: Enter the match score (e.g., "6-4, 6-3")
+     * Date: Select the date of the final match
+   - Click "Save Result" button
+
+3. **Technical Notes**:
+   - API endpoint: POST /tournament/results/
+   - The tournament must exist in the system before adding results
+   - All fields are required
+   - Date must be in ISO format (YYYY-MM-DD)
+
+### How to View Tournament Results
+1. **View All Results**:
+   - Navigate to Tournament Section
+   - Click "View Tournament Results" or similar button
+   - All tournament results will be displayed
+
+2. **View Results by Tournament**:
+   - Navigate to Tournament Section
+   - Select a specific tournament from the dropdown
+   - Click "Filter" or "Search" button
+   - Results for the selected tournament will be displayed
+
+3. **Technical Notes**:
+   - API endpoints:
+     * GET /tournament/results/ (all results)
+     * GET /tournament/results/?tournament_id={id} (by tournament)
+   - Supports pagination with "skip" and "limit" parameters
+
+### How to Edit Tournament Results
+1. **Edit a Result Entry**:
+   - Navigate to Tournament Section > Manage Results
+   - Locate the result entry you want to edit
+   - Click the "Edit" button next to the entry
+   - Update any of the fields as needed
+   - Click "Save Changes" button
+
+2. **Technical Notes**:
+   - API endpoint: PUT /tournament/results/{result_id}
+   - All fields can be updated
+
+### How to Delete Tournament Results
+1. **Delete a Result Entry**:
+   - Navigate to Tournament Section > Manage Results
+   - Locate the result entry you want to delete
+   - Click the "Delete" button next to the entry
+   - Confirm deletion when prompted
+
+2. **Technical Notes**:
+   - API endpoint: DELETE /tournament/results/{result_id}
+   - Deletion is permanent and cannot be undone
+
+## Best Practices for Tournament Management
+
+1. **Data Organization**:
+   - Create the tournament record before adding schedules or results
+   - Use consistent naming conventions for tournaments and categories
+   - Keep tournament information up-to-date, especially date changes
+
+2. **Image Optimization**:
+   - Compress images before uploading for faster loading
+   - Use descriptive titles and alt text for accessibility
+   - Maintain consistent image dimensions (aspect ratio)
+
+3. **Content Management**:
+   - Archive old tournaments by setting them to inactive rather than deleting
+   - Regularly review and update tournament information
+   - Ensure all mandatory fields are completed accurately
+
+## Troubleshooting
+
+1. **Cannot Upload Images**:
+   - Check file format (must be JPG, JPEG, or PNG)
+   - Verify file size (must be under 5MB)
+   - Ensure you have proper administrator permissions
+
+2. **Schedule or Result Not Appearing**:
+   - Verify the associated tournament is set to active
+   - Check if all required fields were completed
+   - Try refreshing the page or clearing browser cache
+
+## Support Contacts
+
+For technical assistance with tournament management:
+- Email: tournament.support@mkta.example.com
+- Phone: (555) 123-4567
+- Admin Portal: admin.mkta.example.com/support
+
+---
+
+*This documentation was last updated on May 22, 2025.*

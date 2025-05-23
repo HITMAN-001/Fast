@@ -5,6 +5,10 @@ import Register from "./components/Register";
 import UserList from "./components/UserList";
 import UserDetail from "./components/UserDetail";
 import Home from "./components/Home";
+import Tournament from "./components/Tournament/Tournament";
+import News from "./components/News/News";
+import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
 
 // Navigation Guard Component
 const NavigationGuard = () => {
@@ -59,6 +63,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route
           path="/home"
           element={
@@ -80,6 +86,22 @@ function App() {
           element={
             <ProtectedRoute>
               <UserDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tournament/*"
+          element={
+            <ProtectedRoute>
+              <Tournament />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/news/*"
+          element={
+            <ProtectedRoute>
+              <News />
             </ProtectedRoute>
           }
         />

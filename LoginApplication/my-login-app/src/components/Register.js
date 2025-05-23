@@ -16,7 +16,20 @@ const Register = () => {
   };
 
   const handleRegister = async () => {
+    // Validate inputs
+    if (!email || !password) {
+      setMessage("Email and password are required");
+      return;
+    }
+
+    // Simple email validation
+    if (!email.includes('@') || !email.includes('.')) {
+      setMessage("Please enter a valid email address");
+      return;
+    }
+
     try {
+      setMessage("Registering...");
       const response = await axios.post("http://localhost:8000/users/", {
         email,
         password,
@@ -24,17 +37,26 @@ const Register = () => {
         is_salaried: isSalaried,
         address: address || null  // Send null if no address is provided
       });
+      
+      console.log("Registration response:", response.data);
       setMessage("Registration successful! Redirecting to login...");
+      
       // Wait for 2 seconds before redirecting
       setTimeout(() => {
         navigate('/');
       }, 2000);
     } catch (error) {
-      setMessage(
-        error.response && error.response.data && error.response.data.detail
-          ? error.response.data.detail
-          : "Registration failed. Try again."
-      );
+      console.error("Registration error:", error);
+      
+      let errorMessage = "Registration failed. Try again.";
+      if (error.response) {
+        console.log("Error response:", error.response);
+        if (error.response.data && error.response.data.detail) {
+          errorMessage = error.response.data.detail;
+        }
+      }
+      
+      setMessage(errorMessage);
     }
   };
 

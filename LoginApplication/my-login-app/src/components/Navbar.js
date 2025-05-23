@@ -1,11 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import logo from '../MKTA tennis acedemy logo.jpg';
 
 const Navbar = ({ onLogout, onDelete }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isRootUser, setIsRootUser] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Check if current user is root user
+  useEffect(() => {
+    const checkUserRole = async () => {
+      try {
+        const token = localStorage.getItem('access_token');
+        if (token) {
+          const userId = localStorage.getItem('user_id');
+          const response = await fetch(`http://localhost:8000/users/${userId}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          
+          if (response.ok) {
+            const userData = await response.json();
+            // Root user is determined by user id 1 or email ending with admin@example.com
+            setIsRootUser(userData.id === 1 || userData.email.endsWith('admin@example.com'));
+          }
+        }
+      } catch (error) {
+        console.error('Error checking user role:', error);
+        setIsRootUser(false);
+      }
+    };
+    
+    checkUserRole();
+  }, []);
 
   const isActive = (path) => location.pathname === path;
 
@@ -14,13 +43,20 @@ const Navbar = ({ onLogout, onDelete }) => {
     navigate(path);
   };
 
+  const handleLogoClick = () => {
+    // Only navigate if user is logged in (has token)
+    if (localStorage.getItem('access_token')) {
+      navigate('/home');
+    }
+  };
+
   return (
     <nav className="w-full bg-gradient-to-r from-gray-800 to-gray-900 p-4 shadow-lg">
       <div className="container mx-auto flex items-center justify-between">
         {/* Logo and Title */}
         <div 
           className="flex items-center space-x-4 cursor-pointer" 
-          onClick={() => handleNavigate('/home')}
+          onClick={handleLogoClick}
         >
           <img 
             src={logo} 
@@ -53,7 +89,19 @@ const Navbar = ({ onLogout, onDelete }) => {
                 onClick={() => handleNavigate('/users')}
                 className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
               >
-                Users List
+                Members
+              </button>
+              <button
+                onClick={() => handleNavigate('/tournament')}
+                className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+              >
+                Tournament Section
+              </button>
+              <button
+                onClick={() => handleNavigate('/news')}
+                className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+              >
+                News & Updates
               </button>
               <div className="border-t border-gray-100 my-2"></div>
               <button
@@ -62,12 +110,14 @@ const Navbar = ({ onLogout, onDelete }) => {
               >
                 Logout
               </button>
-              <button
-                onClick={() => { setMenuOpen(false); onDelete(); }}
-                className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 hover:text-red-800 transition-colors"
-              >
-                Delete Account
-              </button>
+              {isRootUser && (
+                <button
+                  onClick={() => { setMenuOpen(false); onDelete(); }}
+                  className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 hover:text-red-800 transition-colors"
+                >
+                  Delete Account
+                </button>
+              )}
             </div>
           )}
         </div>

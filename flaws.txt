@@ -1,0 +1,104 @@
+# Potential Flaws and Technical Debt
+
+This document identifies potential flaws, technical debt, and areas for improvement in the MKTA Tennis Academy system.
+
+## Authentication and User Management
+
+1. **Email Verification System**
+   - The email verification functionality has been deprecated, but related code still exists
+   - User accounts are now automatically verified (is_verified = True)
+   - Technical debt: Need to remove verification_token and verification_token_expires fields from User model
+   - This will require a database migration
+
+2. **JWT Secret Key Management**
+   - JWT implementation uses HS256 algorithm
+   - The JWT_SECRET_KEY is loaded from environment variable with a fallback to a generated key
+   - Risk: If the secret key changes between restarts, previously issued tokens will become invalid
+   - Recommendation: Ensure stable JWT_SECRET_KEY in production environments
+
+3. **Password Reset Implementation**
+   - Password reset tokens are valid for 1 hour
+   - The system sends a reset link via email but doesn't implement rate limiting
+   - Risk: Potential for reset token brute-force attacks
+   - Recommendation: Implement rate limiting on password reset requests
+
+## Code Structure
+
+1. **Duplicate Code**
+   - The `save_upload_file` function was previously duplicated in multiple files
+   - It has been refactored to be centralized in utils.py
+   - Recommendation: Continue identifying and refactoring duplicate functionality
+
+2. **Error Handling**
+   - Error handling is inconsistent across different endpoints
+   - Some errors are logged with detailed messages, others return generic responses
+   - Recommendation: Standardize error handling and logging across all endpoints
+
+## Database and Models
+
+1. **Timestamp Management**
+   - SQLAlchemy models with fields like `updated_at` automatically handle updates
+   - Explicitly setting these fields in CRUD functions before committing is redundant
+   - This has been fixed in crud_news.py but may exist in other CRUD modules
+   - Recommendation: Review all CRUD functions for redundant timestamp updates
+
+2. **Database Migrations**
+   - Multiple migration scripts exist (migrations.py, migrations_email_verification.py, etc.)
+   - No formal migration framework like Alembic is used
+   - Risk: Difficult to track and manage database schema evolution
+   - Recommendation: Implement a proper database migration system using Alembic
+
+## Security
+
+1. **CORS Configuration**
+   - Current CORS policy allows all origins ("*")
+   - While suitable for development, this is insecure for production
+   - Recommendation: Restrict allowed origins to specific frontend URLs in production
+
+2. **Input Validation**
+   - Input validation relies primarily on Pydantic schemas
+   - Some endpoints may lack sufficient validation, especially for file uploads
+   - Recommendation: Implement additional validation for file uploads (size, content type)
+
+3. **Authentication Checks**
+   - The `get_current_user` dependency now checks if `user.is_active` is True
+   - There's no role-based access control system implemented
+   - Recommendation: Implement proper role-based access control for admin functions
+
+## Performance
+
+1. **File Storage System**
+   - Files are stored directly on the filesystem rather than using a CDN or object storage
+   - Risk: Scaling issues when deployed across multiple servers
+   - Recommendation: Implement cloud storage (S3, Azure Blob, etc.) for static files
+
+2. **Database Query Optimization**
+   - Some endpoints fetch all records before filtering
+   - Risk: Performance issues with large datasets
+   - Recommendation: Review and optimize database queries, especially for listing endpoints
+
+## Frontend Integration
+
+1. **API Documentation**
+   - While the API provides Swagger/OpenAPI documentation via /docs
+   - There's no explicit documentation on how the frontend should integrate
+   - Recommendation: Add frontend integration examples for common operations
+
+## DevOps and Deployment
+
+1. **Containerization**
+   - The application uses Docker for development but doesn't have a production-ready Docker setup
+   - Recommendation: Create proper Docker and docker-compose files for production deployment
+
+2. **Environment Configuration**
+   - Environment variables are loaded directly, without validation
+   - Risk: Missing or misconfigured environment variables can cause runtime issues
+   - Recommendation: Implement environment variable validation on startup
+
+3. **Testing**
+   - Limited test coverage based on repository structure
+   - Recommendation: Implement comprehensive unit and integration tests
+
+---
+
+*This document was last updated on May 22, 2025.*

@@ -1,0 +1,127 @@
+# Guide: How to Upload Tournament Content
+
+This guide explains how to upload and manage content in the Tournament section of the MKTA Tennis Academy website, including images, results, and schedules.
+
+## Tournament Images
+
+### Uploading New Tournament Images
+
+1. **Access the Tournament Admin Panel**:
+   - Log in with your administrator account
+   - Navigate to Tournament Section
+
+2. **Upload Images**:
+   - Click on "Manage Tournament Images" button
+   - Click "Upload New Image"
+   - Fill in the form:
+     * Title (required): Enter a descriptive title for the image
+     * Description (optional): Add details about the image
+     * Image File: Click "Browse" and select a JPG, JPEG, or PNG file (max size: 5MB)
+   - Click "Upload" button
+   - The image will be processed and added to the tournament gallery
+
+3. **Image Requirements**:
+   - Recommended size: 1200x800 pixels
+   - Supported formats: JPG, JPEG, PNG
+   - Maximum file size: 5MB
+
+### Managing Existing Images
+
+1. **View All Images**:
+   - On the Tournament Admin Panel, click "Manage Tournament Images"
+   - All uploaded images will be displayed with their details
+
+2. **Edit Image Details**:
+   - Click on the "Edit" button next to an image
+   - Update title, description, or replace the image file
+   - Click "Save Changes"
+
+3. **Delete Images**:
+   - Click on the "Delete" button next to an image
+   - Confirm deletion when prompted
+   - Note: Deletion is permanent and cannot be undone
+
+## Tournament Results
+
+### Adding Tournament Results
+
+1. **Access Results Management**:
+   - Navigate to Tournament Section
+   - Click on "Manage Results" button
+
+2. **Add New Result**:
+   - Click "Add New Result" button
+   - Complete the form with:
+     * Tournament ID: Select from the dropdown menu
+     * Category: Enter the tournament category (e.g., "Men's Singles")
+     * Winner: Enter the name of the winner
+     * Runner-up: Enter the name of the runner-up
+     * Score: Enter the match score (e.g., "6-4, 6-3")
+     * Date: Select the date of the final match
+   - Click "Save Result" button
+
+3. **Edit Existing Results**:
+   - Click "Edit" next to any result
+   - Update the fields as needed
+   - Click "Save Changes"
+
+4. **Delete Results**:
+   - Click "Delete" next to the result you want to remove
+   - Confirm deletion when prompted
+
+## Tournament Schedule
+
+### Managing Tournament Schedule
+
+1. **Access Schedule Management**:
+   - Navigate to Tournament Section
+   - Click on "Manage Schedule" button
+
+2. **Add Schedule Entry**:
+   - Click "Add New Schedule" button
+   - Complete the form:
+     * Date: Select the date of the matches
+     * Time: Enter the starting time
+     * Category: Enter the tournament category
+     * Round: Enter the round (e.g., "Quarter-final", "Semi-final")
+     * Court: Enter the court number or name
+     * Players: Enter the players' names (e.g., "John Smith vs. Alex Johnson")
+   - Click "Save Schedule" button
+
+3. **Edit Schedule Entry**:
+   - Click "Edit" next to any schedule entry
+   - Update the fields as needed
+   - Click "Save Changes"
+
+4. **Delete Schedule Entry**:
+   - Click "Delete" next to the entry you want to remove
+   - Confirm deletion when prompted
+
+## Best Practices
+
+1. **Image Optimization**:
+   - Compress images before uploading for faster loading
+   - Use descriptive titles and alt text for accessibility
+   - Maintain consistent image dimensions (aspect ratio)
+
+2. **Data Organization**:
+   - Keep tournament data organized by using consistent naming conventions
+   - Group related tournaments together
+   - Archive old tournament data periodically
+
+3. **Regular Updates**:
+   - Update tournament schedules promptly
+   - Post results as soon as possible after matches
+   - Refresh gallery images to keep content engaging
+
+## Technical Support
+
+If you encounter any issues while managing tournament content, please contact:
+
+- Technical Support: support@mkta.example.com
+- Admin Portal: admin.mkta.example.com/support
+- Helpdesk Phone: (555) 123-4567
+
+---
+
+*This guide was created for MKTA Tennis Academy administrators on May 20, 2025.*

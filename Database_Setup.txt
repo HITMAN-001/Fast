@@ -1,0 +1,236 @@
+# Database Setup and Management Documentation
+
+## Overview
+This document provides detailed instructions for setting up, configuring, and managing the PostgreSQL database for the MKTA Tennis Academy system.
+
+## Database Architecture
+
+### Database Engine
+- PostgreSQL is used as the primary database engine
+- SQLAlchemy ORM is used for database interactions
+- Database connection is configured in `database.py`
+
+### Schema Overview
+The database schema consists of the following main tables:
+
+1. **users**
+   - Stores user account information
+   - Contains authentication details and personal information
+   - Fields include: id, email, hashed_password, is_active, etc.
+
+2. **tournament_images**
+   - Stores metadata for tournament images
+   - Actual image files are stored on the filesystem
+   - Fields include: id, title, image_path, description, upload_date, etc.
+
+3. **tournament_schedules**
+   - Contains tournament scheduling information
+   - Fields include: id, date, time, category, round, court, players, etc.
+
+4. **tournaments**
+   - Stores tournament details
+   - Has one-to-many relationship with tournament_results
+   - Fields include: id, name, start_date, end_date, location, description, etc.
+
+5. **tournament_results**
+   - Contains tournament outcome information
+   - Linked to tournaments table via foreign key
+   - Fields include: id, tournament_id, category, winner, runner_up, score, date, etc.
+
+6. **news_articles**
+   - Stores news content
+   - Fields include: id, title, content, summary, image_path, category, author, is_featured, etc.
+
+7. **newsletter_subscribers**
+   - Manages newsletter subscription information
+   - Fields include: id, name, email, player_category, interests, is_active, etc.
+
+## Initial Database Setup
+
+### Using Docker (Recommended)
+
+1. **Prerequisites**:
+   - Docker and Docker Compose installed on your system
+   - The project cloned to your local machine
+
+2. **Start PostgreSQL Container**:
+   - Navigate to the project root directory
+   - Run the following command:
+     ```
+     docker-compose up -d
+     ```
+   - This will start a PostgreSQL container with the correct configuration
+
+3. **Verify Database is Running**:
+   - Run the following command to check container status:
+     ```
+     docker ps
+     ```
+   - You should see the PostgreSQL container running
+
+4. **Database Connection Details**:
+   - Host: localhost
+   - Port: 5432
+   - Database: postgres
+   - Username: postgres
+   - Password: postgres
+
+### Manual Setup (Alternative)
+
+1. **Install PostgreSQL**:
+   - Download and install PostgreSQL from the official website
+   - Create a new database for the application
+
+2. **Configure Connection**:
+   - Open `app/database.py`
+   - Update the `SQLALCHEMY_DATABASE_URL` variable with your connection details:
+     ```python
+     SQLALCHEMY_DATABASE_URL = "postgresql://user:password@localhost/dbname"
+     ```
+
+## Database Initialization
+
+1. **Create Tables**:
+   - The application automatically creates tables on startup
+   - This is handled by the following code in `main.py`:
+     ```python
+     models.Base.metadata.create_all(bind=engine)
+     ```
+
+2. **Manual Initialization** (if needed):
+   - Navigate to the project root directory
+   - Run the initialization script:
+     ```
+     python init_db.py
+     ```
+   - This will create all necessary tables and indexes
+
+## Database Migrations
+
+When the database schema changes, migrations need to be performed to update existing databases without losing data.
+
+### Running Migrations
+
+1. **Basic Migrations**:
+   - The project includes several migration scripts:
+     * `migrations.py`: Basic schema updates
+     * `migrations_email_verification.py`: Changes related to email verification
+     * `migrations_password_reset.py`: Password reset functionality
+     * `migrations_new_features.py`: Various feature updates
+     * `migrations_verify_all_users.py`: Mass verification update
+
+2. **Running a Migration**:
+   - Navigate to the project root directory
+   - Run the appropriate migration script:
+     ```
+     python migrations_new_features.py
+     ```
+   - Follow any on-screen prompts
+
+3. **Important Notes**:
+   - Always back up your database before running migrations
+   - Test migrations in a development environment first
+   - Some migrations may require application downtime
+
+## Database Maintenance
+
+### Backing Up the Database
+
+1. **Using Docker**:
+   - Run the following command to backup the database:
+     ```
+     docker exec -t postgres pg_dump -U postgres postgres > backup_$(date +%Y-%m-%d_%H-%M-%S).sql
+     ```
+   - This creates a timestamped SQL backup file
+
+2. **Manual Backup**:
+   - Using the `pg_dump` utility:
+     ```
+     pg_dump -U username dbname > backup.sql
+     ```
+
+### Restoring from Backup
+
+1. **Using Docker**:
+   - Run the following command to restore from a backup:
+     ```
+     cat backup.sql | docker exec -i postgres psql -U postgres
+     ```
+
+2. **Manual Restore**:
+   - Using the `psql` utility:
+     ```
+     psql -U username dbname < backup.sql
+     ```
+
+### Clearing the Database
+
+For development purposes, you might need to clear the database:
+
+1. **Using the Provided Script**:
+   - Navigate to the project root directory
+   - Run the clearing script:
+     ```
+     python clear_database.py
+     ```
+   - This will drop and recreate all tables
+
+2. **Important Warning**:
+   - Never run this in a production environment
+   - All data will be permanently lost
+
+## Database Optimization
+
+### Performance Tips
+
+1. **Index Strategy**:
+   - The most frequently queried fields are already indexed
+   - Primary keys and foreign keys have automatic indexes
+   - Additional indexes can be added for specific query patterns
+
+2. **Query Optimization**:
+   - Use the limit parameter to restrict result sets
+   - Use specific queries rather than retrieving all records
+   - Utilize the ORM's lazy loading capabilities appropriately
+
+3. **Connection Pooling**:
+   - SQLAlchemy is configured with connection pooling
+   - Default settings should be sufficient for most deployments
+   - For high-traffic sites, consider increasing the pool size
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Connection Errors**:
+   - Verify that PostgreSQL is running
+   - Check connection string in `database.py`
+   - Ensure network connectivity between app and database
+   - Verify firewall settings allow the connection
+
+2. **Migration Failures**:
+   - Backup the database before attempting again
+   - Check for error messages in the console output
+   - Verify that the current schema matches what the migration expects
+
+3. **Performance Problems**:
+   - Check for missing indexes on frequently queried fields
+   - Look for N+1 query patterns in the application
+   - Consider adding caching for frequently accessed data
+
+### Getting Help
+
+For database-related issues, consult:
+- PostgreSQL documentation: https://www.postgresql.org/docs/
+- SQLAlchemy documentation: https://docs.sqlalchemy.org/
+
+## Support Contacts
+
+For technical assistance with database management:
+- Email: db.admin@mkta.example.com
+- Phone: (555) 123-4567
+- Admin Portal: admin.mkta.example.com/support
+
+---
+
+*This documentation was last updated on May 22, 2025.*

@@ -1,0 +1,217 @@
+# News Management Documentation
+
+## Overview
+This document provides detailed instructions for managing news-related content in the MKTA Tennis Academy system. It covers news articles management and newsletter subscription features.
+
+## News Articles
+
+### How to Create a News Article
+1. **Access the News Admin Panel**:
+   - Log in with your administrator account
+   - Navigate to the News Section in the admin dashboard
+
+2. **Create New Article**:
+   - Click on "Manage News Articles" button
+   - Click "Create New Article" button
+   - Fill in the required form fields:
+     * Title (required): Enter a descriptive title for the article
+     * Content (required): Enter the full article content (supports rich text)
+     * Summary (optional): Add a brief summary of the article
+     * Category (required): Select or enter the article category
+     * Author (required): Enter the author's name
+     * Featured (checkbox): Check to display the article in featured sections
+     * Image (optional): Click "Browse" and select an image file
+   - Click "Publish" button
+   - The system will process and save the article
+
+3. **Technical Notes**:
+   - API endpoint: POST /news/articles/
+   - Supported image formats: JPG, JPEG, PNG
+   - Images are stored in the "static/news_images" directory
+   - Each uploaded image receives a unique filename
+   - All articles include automatic timestamps
+
+### How to View News Articles
+1. **View All Articles**:
+   - Navigate to News Section
+   - All published articles will be displayed, with newest first
+
+2. **View by Category**:
+   - Navigate to News Section
+   - Use the category filter to select a specific category
+   - Click "Filter" or "Search" button
+   - Articles in the selected category will be displayed
+
+3. **View Featured Articles**:
+   - Featured articles typically appear on the homepage or in a special section
+   - They are marked with a "Featured" badge or icon
+
+4. **Search Articles**:
+   - Use the search box at the top of the News Section
+   - Enter a search term (minimum 3 characters)
+   - Click "Search" button
+   - Articles matching the search term will be displayed
+
+5. **Technical Notes**:
+   - API endpoints:
+     * GET /news/articles/ (all articles)
+     * GET /news/articles/?category={category} (by category)
+     * GET /news/articles/featured/ (featured articles)
+     * GET /news/articles/search/?q={search_term} (search)
+   - Supports pagination with "skip" and "limit" parameters
+   - Default sorting is by publication date (newest first)
+
+### How to Edit News Articles
+1. **Edit an Article**:
+   - Navigate to News Section > Manage News Articles
+   - Locate the article you want to edit
+   - Click the "Edit" button next to the article
+   - Update any of the fields as needed:
+     * Title
+     * Content
+     * Summary
+     * Category
+     * Author
+     * Featured status
+     * Image (optional: upload a new image to replace the existing one)
+   - Click "Save Changes" button
+
+2. **Technical Notes**:
+   - API endpoint: PUT /news/articles/{article_id}
+   - If a new image is uploaded, the old one will be deleted from the server
+   - The article's "updated_at" timestamp will be automatically updated
+
+### How to Delete News Articles
+1. **Delete an Article**:
+   - Navigate to News Section > Manage News Articles
+   - Locate the article you want to delete
+   - Click the "Delete" button next to the article
+   - Confirm deletion when prompted
+
+2. **Technical Notes**:
+   - API endpoint: DELETE /news/articles/{article_id}
+   - This will remove both the database record and any associated image file
+   - Deletion is permanent and cannot be undone
+
+## Newsletter Management
+
+### How to Subscribe to Newsletter (User Perspective)
+1. **Access the Newsletter Subscription Form**:
+   - Navigate to the website homepage or News section
+   - Look for the "Subscribe to Newsletter" form or button
+   - Complete the form with:
+     * Name (required)
+     * Email Address (required)
+     * Player Category (optional)
+     * Interests (optional)
+   - Click "Subscribe" button
+   - A confirmation message will be displayed
+
+2. **Technical Notes**:
+   - API endpoint: POST /news/newsletter/subscribe/
+   - Email addresses must be unique (can't subscribe twice with same email)
+   - All subscribers are active by default
+
+### How to Manage Newsletter Subscribers (Admin)
+1. **View All Subscribers**:
+   - Log in with administrator credentials
+   - Navigate to News Section > Manage Newsletter
+   - All subscribers will be displayed, with newest first
+   - You can filter to show only active subscribers
+
+2. **View Subscriber Details**:
+   - From the subscriber list, click on a subscriber's name or "View" button
+   - Complete subscriber information will be displayed
+
+3. **Edit Subscriber Information**:
+   - From the subscriber list, click "Edit" button next to a subscriber
+   - Update any of the fields:
+     * Name
+     * Email
+     * Player Category
+     * Interests
+     * Active status
+   - Click "Save Changes" button
+
+4. **Deactivate a Subscriber**:
+   - From the subscriber list, click "Delete" button next to a subscriber
+   - Confirm deactivation when prompted
+   - This will mark the subscriber as inactive rather than actually deleting them
+
+5. **Technical Notes**:
+   - API endpoints:
+     * GET /news/newsletter/subscribers/ (admin only)
+     * GET /news/newsletter/subscribers/{subscriber_id} (admin only)
+     * PUT /news/newsletter/subscribers/{subscriber_id} (admin only)
+     * DELETE /news/newsletter/subscribers/{subscriber_id} (admin only)
+
+### How to Unsubscribe from Newsletter (User Perspective)
+1. **Unsubscribe via Email Link**:
+   - Open any newsletter email
+   - Click the "Unsubscribe" link at the bottom of the email
+   - Confirm unsubscription when prompted
+   - A confirmation message will be displayed
+
+2. **Unsubscribe via Website**:
+   - Navigate to the website
+   - Look for "Newsletter Preferences" or "Unsubscribe" in the footer
+   - Enter your email address
+   - Click "Unsubscribe" button
+   - A confirmation message will be displayed
+
+3. **Technical Notes**:
+   - API endpoint: POST /news/newsletter/unsubscribe/{email}
+   - This endpoint doesn't require authentication
+   - Unsubscribing marks the subscriber as inactive rather than deleting them
+
+## Best Practices for News Management
+
+1. **Content Quality**:
+   - Use clear, concise titles that accurately reflect article content
+   - Proofread all articles before publishing
+   - Include relevant images to enhance visual appeal
+   - Use proper formatting (headings, paragraphs, bullet points) for readability
+
+2. **Featured Articles**:
+   - Only mark the most important or timely articles as featured
+   - Regularly rotate featured articles to keep content fresh
+   - Ensure featured articles have high-quality images
+
+3. **Newsletter Management**:
+   - Send newsletters consistently (e.g., weekly, monthly)
+   - Segment subscribers based on interests or player categories
+   - Regularly clean subscriber list by removing inactive addresses
+   - Include an unsubscribe link in all newsletter emails
+
+4. **Content Organization**:
+   - Use consistent categories for easier navigation
+   - Archive older news articles rather than deleting them
+   - Add appropriate tags or keywords to improve searchability
+
+## Troubleshooting
+
+1. **Article Not Displaying**:
+   - Check if all required fields are completed
+   - Verify that any uploaded images meet format requirements
+   - Try refreshing the page or clearing browser cache
+
+2. **Newsletter Subscription Issues**:
+   - Ensure the email address is valid and not already subscribed
+   - Check that all required fields are completed
+   - Verify server connectivity if the subscription form isn't working
+
+3. **Image Upload Problems**:
+   - Check file format (must be JPG, JPEG, or PNG)
+   - Verify file size (must be under 5MB)
+   - Ensure you have proper administrator permissions
+
+## Support Contacts
+
+For technical assistance with news management:
+- Email: news.support@mkta.example.com
+- Phone: (555) 123-4567
+- Admin Portal: admin.mkta.example.com/support
+
+---
+
+*This documentation was last updated on May 22, 2025.*

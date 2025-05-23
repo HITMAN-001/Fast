@@ -1,0 +1,516 @@
+# API Documentation
+
+## Overview
+This document provides detailed technical information about the MKTA Tennis Academy system's API endpoints. It is intended for developers who need to integrate with or extend the system.
+
+## Authentication
+
+### Register User
+- **Endpoint**: `POST /users/`
+- **Description**: Creates a new user account
+- **Request Body**: 
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "password123",
+    "birthdate": "1990-01-01",  // optional
+    "is_salaried": false,       // optional
+    "address": "123 Main St"    // optional
+  }
+  ```
+- **Response**: 201 Created with user details
+- **Authentication**: None required
+- **Errors**: 
+  - 400: Email already registered
+  - 400: Invalid email format
+  - 500: Server error
+
+### Login (Get Access Token)
+- **Endpoint**: `POST /token`
+- **Description**: Authenticates user and returns access token
+- **Request Body**: Form data with `username` (email) and `password`
+- **Response**:
+  ```json
+  {
+    "access_token": "eyJ0eXAi...",
+    "token_type": "bearer",
+    "user_id": 123
+  }
+  ```
+- **Authentication**: None required
+- **Errors**:
+  - 401: Incorrect email or password
+
+### Request Password Reset
+- **Endpoint**: `POST /request-password-reset/`
+- **Description**: Sends password reset email
+- **Request Body**:
+  ```json
+  {
+    "email": "user@example.com"
+  }
+  ```
+- **Response**: Success message
+- **Authentication**: None required
+
+### Reset Password
+- **Endpoint**: `POST /reset-password/`
+- **Description**: Resets password using token
+- **Request Body**:
+  ```json
+  {
+    "token": "reset_token_from_email",
+    "new_password": "new_password123"
+  }
+  ```
+- **Response**: Success message
+- **Authentication**: None required
+- **Errors**:
+  - 400: Invalid or expired token
+
+## User Management
+
+### Get All Users
+- **Endpoint**: `GET /users/`
+- **Description**: Returns a list of all users
+- **Query Parameters**:
+  - `skip`: Number of records to skip (default: 0)
+  - `limit`: Maximum number of records to return (default: 10)
+- **Response**: Array of user objects
+- **Authentication**: Required (admin)
+
+### Get User by ID
+- **Endpoint**: `GET /users/{user_id}`
+- **Description**: Returns details for a specific user
+- **Response**: User object
+- **Authentication**: Required
+- **Errors**:
+  - 404: User not found
+
+### Update User
+- **Endpoint**: `PUT /users/{user_id}`
+- **Description**: Updates user information
+- **Request Body**: User update object (partial update supported)
+- **Response**: Updated user object
+- **Authentication**: Required
+- **Errors**:
+  - 404: User not found
+
+### Delete User
+- **Endpoint**: `DELETE /users/{user_id}`
+- **Description**: Deletes a user account
+- **Response**: Success message
+- **Authentication**: Required (admin)
+- **Errors**:
+  - 404: User not found
+
+## Tournament Management
+
+### Tournament Images
+
+#### Create Tournament Image
+- **Endpoint**: `POST /tournament/images/`
+- **Description**: Uploads a new tournament image
+- **Request Body**: Form data with `title`, `description` (optional), and `image` file
+- **Response**: Created image object
+- **Authentication**: Required
+- **Notes**: Image file must be JPG, JPEG, or PNG
+
+#### Get Tournament Images
+- **Endpoint**: `GET /tournament/images/`
+- **Description**: Returns a list of tournament images
+- **Query Parameters**:
+  - `skip`: Number of records to skip (default: 0)
+  - `limit`: Maximum number of records to return (default: 100)
+  - `active_only`: Filter by active status (default: true)
+- **Response**: Array of image objects
+- **Authentication**: None required
+
+#### Get Tournament Image
+- **Endpoint**: `GET /tournament/images/{image_id}`
+- **Description**: Returns details for a specific image
+- **Response**: Image object
+- **Authentication**: None required
+- **Errors**:
+  - 404: Image not found
+
+#### Update Tournament Image
+- **Endpoint**: `PUT /tournament/images/{image_id}`
+- **Description**: Updates an existing tournament image
+- **Request Body**: Form data with `title`, `description` (optional), and `image` file (optional)
+- **Response**: Updated image object
+- **Authentication**: Required
+- **Errors**:
+  - 404: Image not found
+
+#### Delete Tournament Image
+- **Endpoint**: `DELETE /tournament/images/{image_id}`
+- **Description**: Deletes a tournament image
+- **Response**: No content (204)
+- **Authentication**: Required
+- **Errors**:
+  - 404: Image not found
+
+### Tournament Schedules
+
+#### Create Tournament Schedule
+- **Endpoint**: `POST /tournament/schedules/`
+- **Description**: Creates a new tournament schedule entry
+- **Request Body**:
+  ```json
+  {
+    "date": "2025-06-01",
+    "time": "14:00",
+    "category": "Men's Singles",
+    "round": "Quarter-final",
+    "court": "Court 1",
+    "players": "John Smith vs. Alex Johnson"
+  }
+  ```
+- **Response**: Created schedule object
+- **Authentication**: Required
+
+#### Get Tournament Schedules
+- **Endpoint**: `GET /tournament/schedules/`
+- **Description**: Returns a list of tournament schedules
+- **Query Parameters**:
+  - `skip`: Number of records to skip (default: 0)
+  - `limit`: Maximum number of records to return (default: 100)
+- **Response**: Array of schedule objects
+- **Authentication**: None required
+
+#### Get Tournament Schedules by Date
+- **Endpoint**: `GET /tournament/schedules/{date}`
+- **Description**: Returns schedule entries for a specific date
+- **Response**: Array of schedule objects
+- **Authentication**: None required
+
+#### Get Tournament Schedule
+- **Endpoint**: `GET /tournament/schedules/{schedule_id}`
+- **Description**: Returns details for a specific schedule entry
+- **Response**: Schedule object
+- **Authentication**: None required
+- **Errors**:
+  - 404: Schedule not found
+
+#### Update Tournament Schedule
+- **Endpoint**: `PUT /tournament/schedules/{schedule_id}`
+- **Description**: Updates an existing schedule entry
+- **Request Body**: Schedule update object
+- **Response**: Updated schedule object
+- **Authentication**: Required
+- **Errors**:
+  - 404: Schedule not found
+
+#### Delete Tournament Schedule
+- **Endpoint**: `DELETE /tournament/schedules/{schedule_id}`
+- **Description**: Deletes a schedule entry
+- **Response**: No content (204)
+- **Authentication**: Required
+- **Errors**:
+  - 404: Schedule not found
+
+### Tournaments
+
+#### Create Tournament
+- **Endpoint**: `POST /tournament/`
+- **Description**: Creates a new tournament
+- **Request Body**:
+  ```json
+  {
+    "name": "Summer Championship 2025",
+    "start_date": "2025-06-01",
+    "end_date": "2025-06-07",
+    "location": "Main Courts",
+    "description": "Annual summer championship tournament",
+    "is_active": true
+  }
+  ```
+- **Response**: Created tournament object
+- **Authentication**: Required
+
+#### Get Tournaments
+- **Endpoint**: `GET /tournament/`
+- **Description**: Returns a list of tournaments
+- **Query Parameters**:
+  - `skip`: Number of records to skip (default: 0)
+  - `limit`: Maximum number of records to return (default: 100)
+  - `active_only`: Filter by active status (default: true)
+- **Response**: Array of tournament objects
+- **Authentication**: None required
+
+#### Get Tournament
+- **Endpoint**: `GET /tournament/{tournament_id}`
+- **Description**: Returns details for a specific tournament
+- **Response**: Tournament object
+- **Authentication**: None required
+- **Errors**:
+  - 404: Tournament not found
+
+#### Update Tournament
+- **Endpoint**: `PUT /tournament/{tournament_id}`
+- **Description**: Updates an existing tournament
+- **Request Body**: Tournament update object
+- **Response**: Updated tournament object
+- **Authentication**: Required
+- **Errors**:
+  - 404: Tournament not found
+
+#### Delete Tournament
+- **Endpoint**: `DELETE /tournament/{tournament_id}`
+- **Description**: Deletes a tournament
+- **Response**: No content (204)
+- **Authentication**: Required
+- **Errors**:
+  - 404: Tournament not found
+
+### Tournament Results
+
+#### Create Tournament Result
+- **Endpoint**: `POST /tournament/results/`
+- **Description**: Creates a new tournament result
+- **Request Body**:
+  ```json
+  {
+    "tournament_id": 1,
+    "category": "Men's Singles",
+    "winner": "John Smith",
+    "runner_up": "Alex Johnson",
+    "score": "6-4, 6-3",
+    "date": "2025-06-07"
+  }
+  ```
+- **Response**: Created result object
+- **Authentication**: Required
+- **Errors**:
+  - 404: Tournament not found
+
+#### Get Tournament Results
+- **Endpoint**: `GET /tournament/results/`
+- **Description**: Returns a list of tournament results
+- **Query Parameters**:
+  - `tournament_id`: Filter by tournament (optional)
+  - `skip`: Number of records to skip (default: 0)
+  - `limit`: Maximum number of records to return (default: 100)
+- **Response**: Array of result objects
+- **Authentication**: None required
+
+#### Get Tournament Result
+- **Endpoint**: `GET /tournament/results/{result_id}`
+- **Description**: Returns details for a specific result
+- **Response**: Result object
+- **Authentication**: None required
+- **Errors**:
+  - 404: Result not found
+
+#### Update Tournament Result
+- **Endpoint**: `PUT /tournament/results/{result_id}`
+- **Description**: Updates an existing tournament result
+- **Request Body**: Result update object
+- **Response**: Updated result object
+- **Authentication**: Required
+- **Errors**:
+  - 404: Result not found
+  - 404: Tournament not found
+
+#### Delete Tournament Result
+- **Endpoint**: `DELETE /tournament/results/{result_id}`
+- **Description**: Deletes a tournament result
+- **Response**: No content (204)
+- **Authentication**: Required
+- **Errors**:
+  - 404: Result not found
+
+## News Management
+
+### News Articles
+
+#### Create News Article
+- **Endpoint**: `POST /news/articles/`
+- **Description**: Creates a new news article
+- **Request Body**: Form data with `title`, `content`, `summary` (optional), `category`, `author`, `is_featured` (boolean), and `image` file (optional)
+- **Response**: Created article object
+- **Authentication**: Required
+
+#### Get News Articles
+- **Endpoint**: `GET /news/articles/`
+- **Description**: Returns a list of news articles
+- **Query Parameters**:
+  - `skip`: Number of records to skip (default: 0)
+  - `limit`: Maximum number of records to return (default: 100)
+  - `category`: Filter by category (optional)
+- **Response**: Array of article objects
+- **Authentication**: None required
+
+#### Get Featured News Articles
+- **Endpoint**: `GET /news/articles/featured/`
+- **Description**: Returns a list of featured news articles
+- **Query Parameters**:
+  - `limit`: Maximum number of records to return (default: 5)
+- **Response**: Array of article objects
+- **Authentication**: None required
+
+#### Search News Articles
+- **Endpoint**: `GET /news/articles/search/`
+- **Description**: Searches news articles by text
+- **Query Parameters**:
+  - `q`: Search term (minimum 3 characters)
+  - `skip`: Number of records to skip (default: 0)
+  - `limit`: Maximum number of records to return (default: 100)
+- **Response**: Array of article objects
+- **Authentication**: None required
+
+#### Get News Article
+- **Endpoint**: `GET /news/articles/{article_id}`
+- **Description**: Returns details for a specific article
+- **Response**: Article object
+- **Authentication**: None required
+- **Errors**:
+  - 404: Article not found
+
+#### Update News Article
+- **Endpoint**: `PUT /news/articles/{article_id}`
+- **Description**: Updates an existing news article
+- **Request Body**: Form data with `title`, `content`, `summary` (optional), `category`, `author`, `is_featured` (boolean), and `image` file (optional)
+- **Response**: Updated article object
+- **Authentication**: Required
+- **Errors**:
+  - 404: Article not found
+
+#### Delete News Article
+- **Endpoint**: `DELETE /news/articles/{article_id}`
+- **Description**: Deletes a news article
+- **Response**: No content (204)
+- **Authentication**: Required
+- **Errors**:
+  - 404: Article not found
+
+### Newsletter Subscribers
+
+#### Subscribe to Newsletter
+- **Endpoint**: `POST /news/newsletter/subscribe/`
+- **Description**: Subscribes a user to the newsletter
+- **Request Body**:
+  ```json
+  {
+    "name": "John Doe",
+    "email": "john@example.com",
+    "player_category": "Junior",  // optional
+    "interests": "Tournaments, News"  // optional
+  }
+  ```
+- **Response**: Created subscriber object
+- **Authentication**: None required
+- **Errors**:
+  - 400: Email already subscribed
+
+#### Get Newsletter Subscribers
+- **Endpoint**: `GET /news/newsletter/subscribers/`
+- **Description**: Returns a list of newsletter subscribers
+- **Query Parameters**:
+  - `skip`: Number of records to skip (default: 0)
+  - `limit`: Maximum number of records to return (default: 100)
+  - `active_only`: Filter by active status (default: true)
+- **Response**: Array of subscriber objects
+- **Authentication**: Required (admin)
+
+#### Get Newsletter Subscriber
+- **Endpoint**: `GET /news/newsletter/subscribers/{subscriber_id}`
+- **Description**: Returns details for a specific subscriber
+- **Response**: Subscriber object
+- **Authentication**: Required (admin)
+- **Errors**:
+  - 404: Subscriber not found
+
+#### Update Newsletter Subscriber
+- **Endpoint**: `PUT /news/newsletter/subscribers/{subscriber_id}`
+- **Description**: Updates an existing newsletter subscriber
+- **Request Body**: Subscriber update object
+- **Response**: Updated subscriber object
+- **Authentication**: Required (admin)
+- **Errors**:
+  - 404: Subscriber not found
+
+#### Unsubscribe from Newsletter
+- **Endpoint**: `POST /news/newsletter/unsubscribe/{email}`
+- **Description**: Unsubscribes a user from the newsletter
+- **Response**: Success message
+- **Authentication**: None required
+- **Errors**:
+  - 404: Email not found
+
+#### Delete Newsletter Subscriber
+- **Endpoint**: `DELETE /news/newsletter/subscribers/{subscriber_id}`
+- **Description**: Marks a subscriber as inactive (soft delete)
+- **Response**: No content (204)
+- **Authentication**: Required (admin)
+- **Errors**:
+  - 404: Subscriber not found
+
+## General Endpoints
+
+### Root Endpoint
+- **Endpoint**: `GET /`
+- **Description**: Returns basic API information
+- **Response**: 
+  ```json
+  {
+    "message": "Work In Progress"
+  }
+  ```
+- **Authentication**: None required
+
+### Health Check
+- **Endpoint**: `GET /health`
+- **Description**: Returns API health status
+- **Response**: 
+  ```json
+  {
+    "status": "healthy"
+  }
+  ```
+- **Authentication**: None required
+
+## Authentication Details
+
+### JWT Token
+- All protected endpoints require a valid JWT token
+- Token should be included in the Authorization header:
+  ```
+  Authorization: Bearer {your_token}
+  ```
+- Tokens expire after 30 minutes (default setting)
+- Token contains the user's email in the "sub" claim
+
+### Errors
+- Unauthorized (401): Missing or invalid token
+- Forbidden (403): Insufficient permissions
+- Not Found (404): Resource not found
+- Bad Request (400): Invalid request parameters
+- Internal Server Error (500): Server-side error
+
+## Data Models
+
+- Full details of data models can be found in the `schemas.py` file
+- Primary models include:
+  - User
+  - TournamentImage
+  - TournamentSchedule
+  - Tournament
+  - TournamentResult
+  - NewsArticle
+  - NewsletterSubscriber
+
+## Rate Limiting
+
+- The API currently does not implement rate limiting
+- Future versions may include rate limiting for security
+
+## CORS Policy
+
+- The API allows cross-origin requests from all origins (*)
+- This can be restricted in production to specific frontend URLs
+
+---
+
+*This API documentation was last updated on May 22, 2025.*

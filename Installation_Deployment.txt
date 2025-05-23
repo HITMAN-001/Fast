@@ -1,0 +1,427 @@
+# Installation and Deployment Documentation
+
+## Overview
+This document provides detailed instructions for installing, configuring, and deploying the MKTA Tennis Academy system. It covers both development and production environments.
+
+## System Requirements
+
+### Server Requirements
+- **Operating System**: Linux (Ubuntu 20.04 or newer recommended), Windows Server 2019+, or macOS
+- **CPU**: 2+ cores recommended
+- **RAM**: 4GB minimum, 8GB+ recommended
+- **Storage**: 20GB minimum (more if storing many images)
+- **Network**: Reliable internet connection
+
+### Software Requirements
+- **Python**: 3.8 or newer
+- **PostgreSQL**: 12.0 or newer
+- **Docker** (optional): 20.10 or newer
+- **Docker Compose** (optional): 1.29 or newer
+- **Git**: 2.30 or newer
+
+## Development Environment Setup
+
+### Clone the Repository
+1. Open a terminal or command prompt
+2. Run the following command:
+   ```
+   git clone <repository-url>
+   cd Fast-Backend
+   ```
+
+### Set Up Python Environment
+1. **Create a Virtual Environment**:
+   ```
+   python -m venv venv
+   ```
+
+2. **Activate the Virtual Environment**:
+   - Windows:
+     ```
+     venv\Scripts\activate
+     ```
+   - Linux/macOS:
+     ```
+     source venv/bin/activate
+     ```
+
+3. **Install Dependencies**:
+   ```
+   pip install -r requirements.txt
+   ```
+
+### Configure Database
+1. **Start PostgreSQL**:
+   - Using Docker (recommended for development):
+     ```
+     docker-compose up -d
+     ```
+   - Or use a locally installed PostgreSQL instance
+
+2. **Initialize Database**:
+   ```
+   python init_db.py
+   ```
+
+### Configure Environment Variables
+1. **Create .env File** (optional, create in project root):
+   ```
+   DATABASE_URL=postgresql://postgres:postgres@localhost/postgres
+   JWT_SECRET_KEY=your-secret-key
+   ACCESS_TOKEN_EXPIRE_MINUTES=30
+   ```
+
+### Run Development Server
+1. **Start the FastAPI Server**:
+   ```
+   uvicorn app.main:app --reload
+   ```
+
+2. **Access the API**:
+   - API: http://localhost:8000
+   - Interactive docs: http://localhost:8000/docs
+
+## Production Deployment
+
+### Server Preparation
+1. **Update System**:
+   ```
+   sudo apt update
+   sudo apt upgrade -y
+   ```
+
+2. **Install Dependencies**:
+   ```
+   sudo apt install -y python3 python3-pip python3-venv nginx
+   ```
+
+### Application Setup
+1. **Create Application Directory**:
+   ```
+   sudo mkdir -p /opt/mkta-app
+   sudo chown $USER:$USER /opt/mkta-app
+   ```
+
+2. **Clone Repository**:
+   ```
+   git clone <repository-url> /opt/mkta-app
+   cd /opt/mkta-app
+   ```
+
+3. **Set Up Python Environment**:
+   ```
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   pip install gunicorn
+   ```
+
+### Database Setup
+1. **Install PostgreSQL**:
+   ```
+   sudo apt install -y postgresql postgresql-contrib
+   ```
+
+2. **Create Database and User**:
+   ```
+   sudo -u postgres psql
+   ```
+   
+   In the PostgreSQL prompt:
+   ```
+   CREATE DATABASE mkta;
+   CREATE USER mkta_user WITH ENCRYPTED PASSWORD 'secure_password';
+   GRANT ALL PRIVILEGES ON DATABASE mkta TO mkta_user;
+   \q
+   ```
+
+3. **Update Database Configuration**:
+   - Edit `app/database.py` or use environment variables to set the connection string
+
+### Configure Environment Variables
+1. **Create Environment File**:
+   ```
+   sudo nano /etc/environment
+   ```
+   
+   Add the following lines:
+   ```
+   DATABASE_URL=postgresql://mkta_user:secure_password@localhost/mkta
+   JWT_SECRET_KEY=your-production-secret-key
+   ACCESS_TOKEN_EXPIRE_MINUTES=30
+   ```
+
+2. **Apply Environment Variables**:
+   ```
+   source /etc/environment
+   ```
+
+### Set Up Static Files
+1. **Create Required Directories**:
+   ```
+   mkdir -p /opt/mkta-app/static/tournament_images
+   mkdir -p /opt/mkta-app/static/news_images
+   ```
+
+### Create Systemd Service
+1. **Create Service File**:
+   ```
+   sudo nano /etc/systemd/system/mkta-app.service
+   ```
+
+2. **Add Service Configuration**:
+   ```
+   [Unit]
+   Description=MKTA Tennis Academy API
+   After=network.target
+
+   [Service]
+   User=www-data
+   Group=www-data
+   WorkingDirectory=/opt/mkta-app
+   Environment="PATH=/opt/mkta-app/venv/bin"
+   Environment="DATABASE_URL=postgresql://mkta_user:secure_password@localhost/mkta"
+   Environment="JWT_SECRET_KEY=your-production-secret-key"
+   Environment="ACCESS_TOKEN_EXPIRE_MINUTES=30"
+   ExecStart=/opt/mkta-app/venv/bin/gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker -b 127.0.0.1:8000
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+
+3. **Enable and Start Service**:
+   ```
+   sudo systemctl daemon-reload
+   sudo systemctl enable mkta-app
+   sudo systemctl start mkta-app
+   ```
+
+### Configure Nginx
+1. **Create Nginx Configuration**:
+   ```
+   sudo nano /etc/nginx/sites-available/mkta-app
+   ```
+
+2. **Add Server Configuration**:
+   ```
+   server {
+       listen 80;
+       server_name your-domain.com;
+
+       location / {
+           proxy_pass http://127.0.0.1:8000;
+           proxy_set_header Host $host;
+           proxy_set_header X-Real-IP $remote_addr;
+       }
+
+       location /static/ {
+           alias /opt/mkta-app/static/;
+       }
+   }
+   ```
+
+3. **Enable Site and Restart Nginx**:
+   ```
+   sudo ln -s /etc/nginx/sites-available/mkta-app /etc/nginx/sites-enabled/
+   sudo nginx -t
+   sudo systemctl restart nginx
+   ```
+
+### Set Up HTTPS (Recommended)
+1. **Install Certbot**:
+   ```
+   sudo apt install -y certbot python3-certbot-nginx
+   ```
+
+2. **Obtain SSL Certificate**:
+   ```
+   sudo certbot --nginx -d your-domain.com
+   ```
+
+3. **Follow the Prompts** to complete HTTPS setup
+
+## Docker Deployment (Alternative)
+
+### Requirements
+- Docker and Docker Compose installed on the server
+
+### Deployment Steps
+1. **Create docker-compose.yml** in your production environment:
+   ```yaml
+   version: '3'
+
+   services:
+     api:
+       build: .
+       ports:
+         - "8000:8000"
+       volumes:
+         - ./static:/app/static
+       environment:
+         - DATABASE_URL=postgresql://postgres:postgres@db/postgres
+         - JWT_SECRET_KEY=your-production-secret-key
+         - ACCESS_TOKEN_EXPIRE_MINUTES=30
+       depends_on:
+         - db
+
+     db:
+       image: postgres:13
+       volumes:
+         - postgres_data:/var/lib/postgresql/data
+       environment:
+         - POSTGRES_PASSWORD=postgres
+         - POSTGRES_USER=postgres
+         - POSTGRES_DB=postgres
+
+   volumes:
+     postgres_data:
+   ```
+
+2. **Create a Dockerfile** in your project root:
+   ```dockerfile
+   FROM python:3.9
+
+   WORKDIR /app
+
+   COPY requirements.txt .
+   RUN pip install --no-cache-dir -r requirements.txt
+
+   COPY . .
+
+   RUN mkdir -p static/tournament_images static/news_images
+
+   CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+   ```
+
+3. **Build and Start Services**:
+   ```
+   docker-compose up -d
+   ```
+
+4. **Initialize Database** (first run only):
+   ```
+   docker-compose exec api python init_db.py
+   ```
+
+## Maintenance and Updates
+
+### Updating the Application
+1. **Pull Latest Code**:
+   ```
+   cd /opt/mkta-app
+   git pull
+   ```
+
+2. **Activate Virtual Environment**:
+   ```
+   source venv/bin/activate
+   ```
+
+3. **Update Dependencies**:
+   ```
+   pip install -r requirements.txt
+   ```
+
+4. **Apply Database Migrations** (if needed):
+   ```
+   python migrations_new_features.py
+   ```
+
+5. **Restart Service**:
+   ```
+   sudo systemctl restart mkta-app
+   ```
+
+### Backup Procedures
+1. **Database Backup**:
+   ```
+   pg_dump -U mkta_user mkta > mkta_backup_$(date +%Y-%m-%d).sql
+   ```
+
+2. **Static Files Backup**:
+   ```
+   tar -czf static_backup_$(date +%Y-%m-%d).tar.gz /opt/mkta-app/static
+   ```
+
+3. **Automate Backups** with a cron job:
+   ```
+   0 2 * * * /path/to/backup_script.sh
+   ```
+
+## Monitoring and Logging
+
+### Log Locations
+- Application logs: `/var/log/syslog` (via systemd)
+- Nginx access logs: `/var/log/nginx/access.log`
+- Nginx error logs: `/var/log/nginx/error.log`
+
+### Checking Service Status
+```
+sudo systemctl status mkta-app
+```
+
+### Viewing Live Logs
+```
+sudo journalctl -u mkta-app -f
+```
+
+## Troubleshooting
+
+### Application Not Starting
+1. Check service status:
+   ```
+   sudo systemctl status mkta-app
+   ```
+
+2. Verify environment variables:
+   ```
+   sudo cat /etc/environment
+   ```
+
+3. Check application logs:
+   ```
+   sudo journalctl -u mkta-app
+   ```
+
+### Database Connection Issues
+1. Verify PostgreSQL is running:
+   ```
+   sudo systemctl status postgresql
+   ```
+
+2. Check database connection string:
+   ```
+   echo $DATABASE_URL
+   ```
+
+3. Test database connection:
+   ```
+   psql $DATABASE_URL
+   ```
+
+### Static Files Not Loading
+1. Check file permissions:
+   ```
+   ls -la /opt/mkta-app/static
+   ```
+
+2. Verify Nginx configuration:
+   ```
+   sudo nginx -t
+   ```
+
+3. Check Nginx logs:
+   ```
+   sudo tail -f /var/log/nginx/error.log
+   ```
+
+## Support Contacts
+
+For technical assistance with installation and deployment:
+- Email: devops@mkta.example.com
+- Phone: (555) 123-4567
+- Admin Portal: admin.mkta.example.com/support
+
+---
+
+*This documentation was last updated on May 22, 2025.*

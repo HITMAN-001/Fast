@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import logo from '../MKTA tennis acedemy logo.jpg';
+import backgroundImage from '../TennisCourt_Background.jpg';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
@@ -33,8 +34,8 @@ const Home = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ 
-            backgroundImage: `url(${logo})`,
-            filter: 'brightness(0.4)'
+            backgroundImage: `url(${backgroundImage})`,
+            filter: 'brightness(0.3)'
           }}
         />
         {/* Dark overlay */}
@@ -47,7 +48,7 @@ const Home = () => {
             data-aos="fade-down"
           >
             <h1 className="text-5xl font-bold text-white mb-4 tracking-wider drop-shadow-lg">
-              MKTA Tennis Academy
+              Manoj Kusalkar Tennis Academy
             </h1>
           </div>
 
